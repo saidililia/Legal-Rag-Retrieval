@@ -39,3 +39,4 @@ async def chat(req: ChatRequest):
     return {
         "reply": response
     }
+
