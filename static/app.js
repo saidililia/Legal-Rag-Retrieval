@@ -2,19 +2,20 @@ const sendBtn = document.getElementById("send-btn");
 const promptInput = document.getElementById("prompt");
 const messages = document.getElementById("messages");
 
-
-function addMessage(text, role) {
+function addMessage(text, sender) {
 
     const div = document.createElement("div");
 
     div.classList.add("message");
-    div.classList.add(role);
+    div.classList.add(sender);
 
     div.innerText = text;
 
     messages.appendChild(div);
 
     messages.scrollTop = messages.scrollHeight;
+
+    return div;
 }
 
 
@@ -27,40 +28,42 @@ async function sendMessage() {
     // Add user message
     addMessage(text, "user");
 
-    // Clear input
     promptInput.value = "";
 
-    try {
+    // Create empty assistant message
+    const assistantDiv = addMessage("", "assistant");
 
-        const response = await fetch("/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: text
-            })
-        });
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: text
+        })
+    });
 
-        const data = await response.json();
+    const reader = response.body.getReader();
 
-        // Add AI response
-        addMessage(data.reply, "assistant");
+    const decoder = new TextDecoder();
 
-    } catch (error) {
+    while (true) {
 
-        addMessage("Error connecting to server.", "assistant");
+        const { done, value } = await reader.read();
 
-        console.error(error);
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+
+        assistantDiv.innerText += chunk;
+
+        messages.scrollTop = messages.scrollHeight;
     }
 }
 
 
-// Button click
 sendBtn.addEventListener("click", sendMessage);
 
-
-// Enter key
 promptInput.addEventListener("keydown", (e) => {
 
     if (e.key === "Enter" && !e.shiftKey) {

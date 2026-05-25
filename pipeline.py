@@ -12,7 +12,7 @@ def run_simple_legal_pipeline():
     # 1. Initialize the local LLM engine
     # We point to your local port and set temperature low (0.1) for legal accuracy
     llm = ChatOllama(
-        model="qwen3:8b",
+        model="llama3",
         temperature=0.1,
         base_url="http://localhost:11434"
     )
@@ -39,6 +39,7 @@ def run_simple_legal_pipeline():
         sys.stdout.write(chunk)
         sys.stdout.flush()
     print("\n")
+
 
 
 # Ensures that certain code runs only when the file is executed directly, and not when it is imported as a module into another script.
