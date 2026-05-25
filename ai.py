@@ -27,7 +27,7 @@ embeddings = OllamaEmbeddings(
 )
 
 # -----------------------------
-# Vector DB
+# Vector Store
 # -----------------------------
 
 vectorstore = Chroma(
@@ -46,12 +46,12 @@ retriever = vectorstore.as_retriever(
 prompt = ChatPromptTemplate.from_template("""
 You are a legal AI assistant.
 
-Answer the user's question ONLY using the provided legal context.
+Answer ONLY using the provided context.
 
 If the answer is not found in the context, say:
-"I could not find enough legal information in the provided documents."
+"I could not find enough legal information in the documents."
 
-Always mention that laws vary by jurisdiction.
+Always mention laws vary by jurisdiction.
 
 Context:
 {context}
@@ -64,17 +64,20 @@ chain = prompt | llm | StrOutputParser()
 
 
 # -----------------------------
-# Streaming RAG
+# STREAMING RAG
 # -----------------------------
 
 def stream_ai_response(question: str):
 
+    # 1. Retrieve relevant docs
     docs = retriever.invoke(question)
 
+    # 2. Build context
     context = "\n\n".join(
         doc.page_content for doc in docs
     )
 
+    # 3. Stream response
     for chunk in chain.stream({
         "context": context,
         "question": question

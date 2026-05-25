@@ -31,6 +31,7 @@ async def chat(req: ChatRequest):
     user_message = req.message
 
     def generate():
+
         for chunk in stream_ai_response(user_message):
             yield chunk
 
