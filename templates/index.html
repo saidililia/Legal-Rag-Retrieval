@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chat</title>
+
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
@@ -9,17 +13,36 @@
 
 <div class="app">
 
+    <!-- Sidebar -->
     <div class="sidebar">
-        <h2>Chat App</h2>
+        <div class="logo">
+            Chat App
+        </div>
+
+        <button class="new-chat">
+            + New Chat
+        </button>
     </div>
 
+    <!-- Main -->
     <div class="main">
 
+        <!-- Messages -->
         <div id="messages" class="messages"></div>
 
-        <div class="input-box">
-            <textarea id="prompt" placeholder="Ask something..."></textarea>
-            <button id="send-btn">Send</button>
+        <!-- Input -->
+        <div class="input-container">
+
+            <textarea
+                id="prompt"
+                placeholder="Message AI..."
+                rows="1"
+            ></textarea>
+
+            <button id="send-btn">
+                Send
+            </button>
+
         </div>
 
     </div>
