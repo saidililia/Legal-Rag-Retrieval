@@ -6,8 +6,6 @@ from langchain_community.vectorstores import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# Import the guardrail function from your separate file
-from guardrails import is_toxic
 
 # -----------------------------
 # LLM
@@ -48,8 +46,6 @@ retriever = vectorstore.as_retriever(
 prompt = ChatPromptTemplate.from_template("""
 You are a legal AI assistant.
 
-Answer ONLY legally related prompts.
-                                                                                    
 Answer ONLY using the provided context.
 
 If the answer is not found in the context, say:
@@ -71,31 +67,19 @@ chain = prompt | llm | StrOutputParser()
 # STREAMING RAG
 # -----------------------------
 
-# -----------------------------
-# STREAMING RAG WITH GUARDRAILS
-# -----------------------------
 def stream_ai_response(question: str):
-    
-    # 🛑 1. INPUT GUARDRAIL: Check user question toxicity
-    if is_toxic(question, threshold=0.6):
-        yield "System Warning: Your request contains inappropriate or abusive language. Processing terminated."
-        return
 
-    # 2. Retrieve relevant docs
+    # 1. Retrieve relevant docs
     docs = retriever.invoke(question)
 
-    # 3. Build context
-    context = "\n\n".join(doc.page_content for doc in docs)
+    # 2. Build context
+    context = "\n\n".join(
+        doc.page_content for doc in docs
+    )
 
-    # 4. Stream response
-    complete_response = ""
+    # 3. Stream response
     for chunk in chain.stream({
         "context": context,
         "question": question
     }):
-        complete_response += chunk
         yield chunk
-
-    # 🛑 5. OUTPUT GUARDRAIL: Post-generation check on full text
-    if is_toxic(complete_response, threshold=0.5):
-        print(f"\n⚠️ ALERT: Post-generation guardrail triggered for output!")
