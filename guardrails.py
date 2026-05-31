@@ -1,0 +1,2 @@
+# Also add guardrails, like if i get an out of scope prompt, answer with: sorry we only answer legal related prompts, etc..
+# Detoxify is an open-source Python library developed by Unitary that leverages deep learning technology to predict whether a comment contains toxic or offensive language
