@@ -1,48 +1,44 @@
+import os
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
 from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 
-import os
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 DATA_PATH = os.path.join(BASE_DIR, "documents")
 DB_PATH = os.path.join(BASE_DIR, "chroma_db")
 
 
 def load_documents():
-
     documents = []
 
     for file in os.listdir(DATA_PATH):
-
         if file.endswith(".pdf"):
-
             pdf_path = os.path.join(DATA_PATH, file)
-
             loader = PyPDFLoader(pdf_path)
-
             documents.extend(loader.load())
 
     return documents
 
 
 def split_documents(documents):
-
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=750,
+        chunk_overlap=150
     )
 
-    return text_splitter.split_documents(documents)
+    chunks = splitter.split_documents(documents)
+
+    # stable IDs for hybrid retrieval
+    for idx, chunk in enumerate(chunks):
+        chunk.metadata["chunk_id"] = idx
+
+    return chunks
 
 
 def create_vector_store(chunks):
-
     embeddings = OllamaEmbeddings(
-        model="nomic-embed-text",
+        model="bge-m3",
         base_url="http://localhost:11434"
     )
 
@@ -54,13 +50,10 @@ def create_vector_store(chunks):
 
     vectorstore.persist()
 
-    print("✅ Vector database created.")
+    print("✅ ChromaDB created successfully")
 
 
 if __name__ == "__main__":
-
     docs = load_documents()
-
     chunks = split_documents(docs)
-
     create_vector_store(chunks)
