@@ -1,3 +1,4 @@
+# this retreival strategy is based on a hybrid approach that combines BM25 and vector search (Chroma) to retrieve relevant documents based on a query. The BM25 algorithm is used for traditional keyword-based retrieval, while the vector search leverages embeddings to find semantically similar documents. The final ranking of documents is determined by combining the scores from both methods.
 import re
 from collections import defaultdict
 from rank_bm25 import BM25Okapi
@@ -8,7 +9,6 @@ from ingest import load_documents, split_documents, DB_PATH
 
 
 
-# tokenizes text, Converts text into lowercase words. Removes punctuation Example: "Hello, World!" → ["hello", "world"] Used for BM25 keyword matching.
 def tokenize(text: str):
     return re.findall(r"\w+", text.lower())
 
