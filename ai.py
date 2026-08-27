@@ -1,48 +1,22 @@
 from langchain_ollama import ChatOllama
-from langchain_ollama import OllamaEmbeddings
-
-from langchain_community.vectorstores import Chroma
-
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+from retreiver import create_hybrid_retriever
 
-# -----------------------------
+
+# -------------------
 # LLM
-# -----------------------------
-
+# -------------------
 llm = ChatOllama(
     model="llama3",
     temperature=0.1,
     base_url="http://localhost:11434"
 )
 
-# -----------------------------
-# Embeddings
-# -----------------------------
-
-embeddings = OllamaEmbeddings(
-    model="nomic-embed-text",
-    base_url="http://localhost:11434"
-)
-
-# -----------------------------
-# Vector Store
-# -----------------------------
-
-vectorstore = Chroma(
-    persist_directory="chroma_db",
-    embedding_function=embeddings
-)
-
-retriever = vectorstore.as_retriever(
-    search_kwargs={"k": 3}
-)
-
-# -----------------------------
+# -------------------
 # Prompt
-# -----------------------------
-
+# -------------------
 prompt = ChatPromptTemplate.from_template("""
 You are a legal AI assistant.
 
@@ -62,24 +36,27 @@ Question:
 
 chain = prompt | llm | StrOutputParser()
 
+# -------------------
+# Retriever
+# -------------------
+retriever = create_hybrid_retriever()
 
-# -----------------------------
-# STREAMING RAG
-# -----------------------------
 
 def stream_ai_response(question: str):
 
-    # 1. Retrieve relevant docs
     docs = retriever.invoke(question)
 
-    # 2. Build context
-    context = "\n\n".join(
-        doc.page_content for doc in docs
-    )
+    context = "\n\n".join(doc.page_content for doc in docs)
 
-    # 3. Stream response
-    for chunk in chain.stream({
+    for token in chain.stream({
         "context": context,
         "question": question
     }):
-        yield chunk
+        yield token
+
+
+if __name__ == "__main__":
+    question = input("Question: ")
+
+    for token in stream_ai_response(question):
+        print(token, end="", flush=True)
