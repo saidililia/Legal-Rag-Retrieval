@@ -8,7 +8,7 @@ try:
     # 'original' uses a compact BERT model (~400MB) suited for local setups
     guard_model = Detoxify('original')
 except Exception as e:
-    print(f"❌ Failed to load Detoxify model: {e}")
+    print(f" Failed to load Detoxify model: {e}")
     sys.exit(1)
 
 def is_toxic(text: str, threshold: float = 0.5) -> bool:
@@ -25,7 +25,7 @@ def is_toxic(text: str, threshold: float = 0.5) -> bool:
         # crosses our safety threshold
         return any(score > threshold for score in results.values())
     except Exception as e:
-        print(f"⚠️ Guardrail prediction error: {e}")
+        print(f" Guardrail prediction error: {e}")
         # Fail safe: if the guardrail crashes, treat it as safe or log an alert
         return False
 

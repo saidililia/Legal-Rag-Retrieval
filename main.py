@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-from ai import stream_ai_response
+from ai_response import stream_ai_response
 
 app = FastAPI()
 

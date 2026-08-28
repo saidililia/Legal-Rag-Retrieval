@@ -3,7 +3,7 @@ from datasets import Dataset
 from pandas import DataFrame
 
 # Import your pipeline componentss
-from ai import retriever, chain
+from ai_response import retriever, chain
 
 # Import Ragas and LangChain wrappers
 from ragas import evaluate
@@ -87,7 +87,7 @@ eval_dataset = Dataset.from_dict({
 print("\n⚖️ Setting up local Ollama judges...")
 
 # Re-using your exact pipeline infrastructure objects to handle the judging
-from ai import llm, embeddings
+from ai_response import llm, embeddings
 
 # Wrap them so Ragas can communicate with them seamlessly
 ragas_llm = LangchainLLMWrapper(llm)

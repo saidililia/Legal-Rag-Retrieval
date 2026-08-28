@@ -5,8 +5,7 @@ from rank_bm25 import BM25Okapi
 from langchain_community.vectorstores import Chroma
 from langchain_ollama import OllamaEmbeddings
 
-from ingest import load_documents, split_documents, DB_PATH
-
+from ..chunking.generic_chunking import load_documents, split_documents, DB_PATH
 
 
 def tokenize(text: str):
