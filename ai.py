@@ -5,18 +5,18 @@ from langchain_core.output_parsers import StrOutputParser
 from retreiver import create_hybrid_retriever
 
 
-# -------------------
+
 # LLM
-# -------------------
+
 llm = ChatOllama(
     model="llama3",
     temperature=0.1,
     base_url="http://localhost:11434"
 )
 
-# -------------------
+
 # Prompt
-# -------------------
+
 prompt = ChatPromptTemplate.from_template("""
 You are a legal AI assistant.
 
