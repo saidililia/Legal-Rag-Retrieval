@@ -1,0 +1,139 @@
+LEGAL RAG — BASELINE EVALUATION
+================================
+
+Evaluation date:
+2026-08-27
+
+Purpose:
+Baseline measurement of the initial Legal RAG implementation
+before retrieval, chunking, guardrail, and source-attribution improvements.
+
+
+SYSTEM CONFIGURATION
+--------------------
+
+LLM:
+- Llama 3 via Ollama
+- Temperature: 0.1
+
+Embedding model:
+- BGE-M3 via Ollama
+
+Vector database:
+- ChromaDB
+
+Lexical retrieval:
+- BM25
+
+Dense retrieval:
+- BGE-M3 embeddings
+
+Hybrid retrieval:
+- Reciprocal Rank Fusion (RRF)
+
+Chunking:
+- RecursiveCharacterTextSplitter
+
+Chunk size:
+- 750 characters
+
+Chunk overlap:
+- 150 characters
+
+Number of retrieved documents:
+- 5
+
+Evaluation judge:
+- Local Llama 3 via Ollama
+
+RAGAS configuration:
+- Timeout: 300 seconds
+- Max workers: 1
+- Max retries: 3
+
+
+TEST DATASET
+------------
+
+Number of evaluation questions:
+2
+
+Questions:
+
+1. What is the official language?
+
+2. What is the religion of the country?
+
+
+BASELINE RAGAS RESULTS
+----------------------
+
+Faithfulness:        0.7083
+Answer Relevancy:    0.6810
+Context Recall:      0.5000
+Context Precision:   0.5000
+
+
+PER-QUESTION RESULTS
+--------------------
+
+Question 1:
+What is the official language?
+
+Faithfulness:        0.7500
+Answer Relevancy:    0.691399
+Context Recall:      1.0000
+Context Precision:   1.0000
+
+Question 2:
+What is the religion of the country?
+
+Faithfulness:        0.666667
+Answer Relevancy:    0.670599
+Context Recall:      0.0000
+Context Precision:   0.0000
+
+
+OBSERVATIONS
+------------
+
+1. The baseline RAG pipeline successfully retrieved context and
+   generated answers for both evaluation questions.
+
+2. The first question achieved perfect context recall and context
+   precision, indicating successful retrieval of the relevant material.
+
+3. The second question produced zero context recall and zero context
+   precision. The retrieved material was related to the topic but did
+   not contain the expected authoritative information.
+
+4. The results indicate that retrieval quality is currently the main
+   area for investigation.
+
+5. Faithfulness and answer relevancy are moderate, suggesting that
+   generation is functional but can potentially be improved through
+   better context selection and grounding.
+
+
+KNOWN IMPLEMENTATION ISSUES
+---------------------------
+
+- Chroma is currently imported from langchain_community and produces
+  a deprecation warning.
+- RAGAS metric imports produce deprecation warnings.
+- LangchainLLMWrapper and LangchainEmbeddingsWrapper produce
+  deprecation warnings.
+- The detailed evaluation output currently looks for a "contexts"
+  column, while the RAGAS output uses "retrieved_contexts", causing
+  the retrieved chunks to be omitted from the final diagnostic printout.
+- The evaluation dataset currently contains only two questions and
+  should not be considered statistically representative.
+
+
+BASELINE STATUS
+---------------
+
+Status: WORKING BASELINE
+
+The core RAG pipeline and RAGAS evaluation execute successfully.
+The baseline is preserved before making architectural improvements.

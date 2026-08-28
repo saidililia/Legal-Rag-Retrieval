@@ -1,4 +1,4 @@
-from langchain_ollama import ChatOllama
+from langchain_ollama import ChatOllama, OllamaEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -36,9 +36,9 @@ Question:
 
 chain = prompt | llm | StrOutputParser()
 
-# -------------------
+
 # Retriever
-# -------------------
+
 retriever = create_hybrid_retriever()
 
 

@@ -1,0 +1,139 @@
+LEGAL RAG — BASELINE RETRIEVAL DIAGNOSTIC
+==========================================
+
+Evaluation date:
+2026-08-27
+
+Query:
+What is the religion of the country?
+
+
+EXPECTED INFORMATION
+--------------------
+
+The expected answer concerns the constitutional provision stating
+the religion of the State.
+
+Relevant source:
+Algeria Constitution.pdf
+
+Relevant legal provision:
+Article 2
+
+
+BASELINE TOP-5 RETRIEVAL RESULTS
+---------------------------------
+
+Rank 1
+Source:
+algeria-adjusted.pdf
+
+Page:
+7
+
+Chunk ID:
+138
+
+Content summary:
+UNFPA Algeria country profile describing the study and its analysis
+of gender justice.
+
+
+Rank 2
+Source:
+algeria-adjusted.pdf
+
+Page:
+7
+
+Chunk ID:
+140
+
+Content summary:
+UNFPA methodology and acknowledgements.
+
+
+Rank 3
+Source:
+algeria-adjusted.pdf
+
+Page:
+9
+
+Chunk ID:
+157
+
+Content summary:
+UNFPA discussion of gender justice and international human rights
+standards.
+
+
+Rank 4
+Source:
+algeria-adjusted.pdf
+
+Page:
+7
+
+Chunk ID:
+141
+
+Content summary:
+UNFPA acknowledgements and country-profile methodology.
+
+
+Rank 5
+Source:
+Algeria Constitution.pdf
+
+Page:
+33
+
+Chunk ID:
+116
+
+Content:
+Article 171 establishes a High Islamic Council and describes its
+religious functions.
+
+
+OBSERVATION
+-----------
+
+The relevant constitutional document is present in the corpus and
+was retrieved at rank 5, but the retrieved chunk does not contain
+the expected constitutional provision.
+
+The top-ranked results are primarily from an UNFPA gender-justice
+country profile and are only indirectly related to the query.
+
+This indicates a retrieval-ranking failure rather than a corpus
+availability failure.
+
+
+BASELINE RAGAS CORRELATION
+--------------------------
+
+Context recall:
+0.0000
+
+Context precision:
+0.0000
+
+Faithfulness:
+0.666667
+
+Answer relevancy:
+0.670599
+
+
+INITIAL HYPOTHESIS
+------------------
+
+Generic character-based chunking does not adequately preserve
+legal document structure.
+
+The retrieval system may benefit from legal-aware document
+segmentation based on sections, articles, and clauses.
+
+This hypothesis will be tested in a subsequent retrieval experiment.

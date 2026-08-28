@@ -11,3 +11,4 @@ detoxify
 uvicorn
 uv
 sync
+rank_bm25

@@ -1,3 +1,4 @@
+# this code is used to ingest documents and create a ChromaDB vector store for retrieval-augmented generation (RAG) with the Ollama embeddings model.
 import os
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
