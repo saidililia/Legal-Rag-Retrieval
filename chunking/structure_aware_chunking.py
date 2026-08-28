@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "documents")
 DB_PATH = os.path.join(BASE_DIR, "chroma_db")
 
-# Dictionary to mimic an in-memory Parent Store (In production, use LangChain's InMemoryStore)
+# Dictionary to mimic an in-memory Parent Store
 PARENT_DOCUMENTS_STORE = {}
 
 def parse_legal_pdf_structured(pdf_path):

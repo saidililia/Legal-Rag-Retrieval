@@ -1,4 +1,4 @@
-# this retreival strategy is based on a hybrid approach that combines BM25 and vector search (Chroma) to retrieve relevant documents based on a query. The BM25 algorithm is used for traditional keyword-based retrieval, while the vector search leverages embeddings to find semantically similar documents. The final ranking of documents is determined by combining the scores from both methods.
+# this retreival strategy is based on a hybrid approach that combines BM25 and vector search (Chroma). The final ranking of documents is determined by combining the scores from both methods.
 import re
 from collections import defaultdict
 from rank_bm25 import BM25Okapi
@@ -21,9 +21,7 @@ class HybridRetriever:
     def invoke(self, query: str, k: int = 5):
         scores = defaultdict(float)
 
-        # --------------------
         # BM25
-        # --------------------
         tokenized_query = tokenize(query)
         bm25_scores = self.bm25.get_scores(tokenized_query)
 
@@ -36,9 +34,7 @@ class HybridRetriever:
         for rank, (idx, _) in enumerate(bm25_ranked):
             scores[idx] += 1 / (60 + rank)
 
-        # --------------------
         # Vector search (Chroma)
-        # --------------------
         results = self.vectorstore.similarity_search_with_score(
             query,
             k=20
@@ -52,9 +48,8 @@ class HybridRetriever:
             similarity = 1 - (distance / max_distance)
             scores[chunk_id] += 1 / (60 + rank)
 
-        # --------------------
+       
         # Final ranking
-        # --------------------
         ranked = sorted(
             scores.items(),
             key=lambda x: x[1],

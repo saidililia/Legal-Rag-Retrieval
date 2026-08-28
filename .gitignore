@@ -1,15 +1,8 @@
-chroma_db/
-lenv
-
 # Python
 __pycache__/
-*.py[cod]
 .venv/
 venv/
 .lenv/
-
-# Environment / secrets
-.env
 
 # Vector database
 chroma_db/
@@ -18,10 +11,6 @@ chroma_db/
 # Local data
 documents/*.pdf
 
-# IDE
-.vscode/
-.idea/
+benchmarks/baseline/retrieval_diagnostics.txt
 
-# OS
-.DS_Store
-Thumbs.db
+.vscode/

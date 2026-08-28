@@ -1,18 +1,17 @@
-from retreiver import create_hybrid_retriever, tokenize
+from ..retrieval.hybrid_retriever import create_hybrid_retriever, tokenize
 
 
 def debug_query(query: str, k: int = 5):
 
     retriever = create_hybrid_retriever()
 
-    print("=" * 90)
-    print("RRF RETRIEVAL DIAGNOSTIC")
-    print("=" * 90)
+    print("-" * 50)
+    print("RRF Retrieval Diagnostic")
+    print("-" * 50)
     print(f"\nQuery: {query}\n")
 
-    # ---------------------------------------------------------
+   
     # BM25
-    # ---------------------------------------------------------
 
     tokenized_query = tokenize(query)
 
@@ -24,9 +23,9 @@ def debug_query(query: str, k: int = 5):
         reverse=True
     )[:20]
 
-    print("\n" + "=" * 90)
-    print("BM25 TOP 20")
-    print("=" * 90)
+    print("\n" + "-" * 50)
+    print("BM25 Top 20")
+    print("-" * 50)
 
     bm25_rank_map = {}
 
@@ -44,18 +43,17 @@ def debug_query(query: str, k: int = 5):
         print("Content:")
         print(doc.page_content[:500].replace("\n", " "))
 
-    # ---------------------------------------------------------
+    
     # Dense retrieval
-    # ---------------------------------------------------------
 
     dense_results = retriever.vectorstore.similarity_search_with_score(
         query,
         k=20
     )
 
-    print("\n" + "=" * 90)
-    print("DENSE TOP 20")
-    print("=" * 90)
+    print("\n" + "-" * 50)
+    print("Dense Top 20")
+    print("-" * 50)
 
     dense_rank_map = {}
 
@@ -73,9 +71,8 @@ def debug_query(query: str, k: int = 5):
         print("Content:")
         print(doc.page_content[:500].replace("\n", " "))
 
-    # ---------------------------------------------------------
+
     # RRF
-    # ---------------------------------------------------------
 
     rrf_scores = {}
 

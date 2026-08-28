@@ -1,8 +1,6 @@
 LEGAL CONSULTATION RAG
 RETRIEVAL DIAGNOSTICS — CURRENT SNAPSHOT
-============================================================
-
-Date: 28 August 2026
+----------------------------------------
 
 SYSTEM STATUS
 -------------

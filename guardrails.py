@@ -3,7 +3,7 @@
 import sys
 from detoxify import Detoxify
 
-print("🛡️ Initializing Detoxify guardrail models...")
+print("Initializing Detoxify guardrail models...")
 try:
     # 'original' uses a compact BERT model (~400MB) suited for local setups
     guard_model = Detoxify('original')

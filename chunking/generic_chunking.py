@@ -1,4 +1,3 @@
-# this code is used to ingest documents and create a ChromaDB vector store for retrieval-augmented generation (RAG) with the Ollama embeddings model.
 import os
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -9,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "documents")
 DB_PATH = os.path.join(BASE_DIR, "chroma_db")
 
-
+# Load pdf documents from the "documents" folder
 def load_documents():
     documents = []
 
@@ -21,7 +20,7 @@ def load_documents():
 
     return documents
 
-
+# Split documents into chunks of 750 characters with 150 characters overlap
 def split_documents(documents):
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=750,
@@ -36,7 +35,7 @@ def split_documents(documents):
 
     return chunks
 
-
+# Create a Chroma vector store from the document chunks using bge-m3 embedding model from Ollama
 def create_vector_store(chunks):
     embeddings = OllamaEmbeddings(
         model="bge-m3",
@@ -51,7 +50,7 @@ def create_vector_store(chunks):
 
     vectorstore.persist()
 
-    print("✅ ChromaDB created successfully")
+    print("ChromaDB created successfully")
 
 
 if __name__ == "__main__":
