@@ -1,139 +1,228 @@
-LEGAL RAG — BASELINE RETRIEVAL DIAGNOSTIC
-==========================================
+LEGAL CONSULTATION RAG
+RETRIEVAL DIAGNOSTICS — CURRENT SNAPSHOT
+============================================================
 
-Evaluation date:
-2026-08-27
+Date: 28 August 2026
+
+SYSTEM STATUS
+-------------
+Current retrieval pipeline:
+
+    Generic chunking
+          ↓
+    BM25 lexical retrieval
+          +
+    Dense retrieval using BGE-M3
+          ↓
+    Reciprocal Rank Fusion (RRF)
+          ↓
+    Top-k retrieved chunks
+          ↓
+    LLM answer generation
+
+Current status:
+- Generic chunking is currently used.
+- BM25 retrieval is implemented.
+- Dense retrieval with BGE-M3 is implemented.
+- BM25 and dense results are combined using Reciprocal Rank Fusion.
+- The vector database was rebuilt successfully before this evaluation.
+- Structure-aware legal document segmentation is NOT part of the current
+  benchmark.
+- Structure-aware segmentation is currently planned/in progress as a
+  future retrieval improvement.
+
+
+============================================================
+RETRIEVAL DIAGNOSTIC 1
+============================================================
 
 Query:
-What is the religion of the country?
+"What is the official language?"
+
+BM25:
+- The relevant constitutional chunk was ranked #1.
+- Chunk ID: 19
+- Page: 2
+- Source: Algeria Constitution.pdf
+- BM25 score: 14.905290
+
+Relevant retrieved content:
+"Article 3 Arabic is the national and official language.
+Tamazight is also a national language."
+
+The BM25 retriever therefore successfully identified the primary
+constitutional source containing the answer.
+
+RRF:
+- Chunk ID 19 remained rank #1.
+- RRF score: 0.016667
+- BM25 rank: #1
+- Dense rank: not reported by the diagnostic.
+
+Observation:
+The lexical retrieval component performs strongly for this query
+because the query terms "official" and "language" occur directly in
+the relevant constitutional passage.
+
+The result also demonstrates that the generic chunks are capable of
+preserving enough surrounding context for a simple factual legal
+question.
 
 
-EXPECTED INFORMATION
---------------------
+============================================================
+RETRIEVAL DIAGNOSTIC 2
+============================================================
 
-The expected answer concerns the constitutional provision stating
-the religion of the State.
+Query:
+"What is the religion of the country?"
 
-Relevant source:
-Algeria Constitution.pdf
+BM25:
+- The most relevant constitutional passage was not ranked first.
+- The top results were largely from the Algeria gender-justice
+  document and other unrelated legal material.
+- The constitutional chunk containing the direct answer appeared
+  lower in the ranking.
 
-Relevant legal provision:
-Article 2
+Important relevant result:
+- Chunk ID: 19
+- Page: 2
+- Source: Algeria Constitution.pdf
+- Content contains:
+  "Article 2 Islam is the religion of the State."
 
+The constitutional chunk was ranked #17 by BM25 in this diagnostic,
+despite containing the exact answer.
 
-BASELINE TOP-5 RETRIEVAL RESULTS
----------------------------------
-
-Rank 1
-Source:
-algeria-adjusted.pdf
-
-Page:
-7
-
-Chunk ID:
-138
-
-Content summary:
-UNFPA Algeria country profile describing the study and its analysis
-of gender justice.
-
-
-Rank 2
-Source:
-algeria-adjusted.pdf
-
-Page:
-7
-
-Chunk ID:
-140
-
-Content summary:
-UNFPA methodology and acknowledgements.
+Observation:
+This exposes a weakness of pure lexical retrieval. The query asks
+for the country's religion, while the authoritative source expresses
+the concept as "religion of the State". The lexical mismatch causes
+BM25 to assign high scores to unrelated documents containing terms
+such as "religion", "Islamic", or other semantically related legal
+language.
 
 
-Rank 3
-Source:
-algeria-adjusted.pdf
+============================================================
+RRF OBSERVATION
+============================================================
 
-Page:
-9
+The current RRF implementation combines the ranked BM25 and dense
+retrieval results.
 
-Chunk ID:
-157
+For the query:
 
-Content summary:
-UNFPA discussion of gender justice and international human rights
-standards.
+"What is the official language?"
 
+the constitutional chunk containing Article 3 was successfully
+promoted to the top of the final ranking.
 
-Rank 4
-Source:
-algeria-adjusted.pdf
+For the query:
 
-Page:
-7
+"What is the religion of the country?"
 
-Chunk ID:
-141
+the final diagnostic did not demonstrate a strong dense-retrieval
+contribution in the displayed ranking, and BM25-dominated results
+remained prominent.
 
-Content summary:
-UNFPA acknowledgements and country-profile methodology.
+This indicates that the current hybrid retrieval implementation is
+functional, but the contribution of dense retrieval should be
+investigated further.
 
+In particular, the diagnostic output should explicitly expose:
 
-Rank 5
-Source:
-Algeria Constitution.pdf
+- dense rank
+- dense distance/similarity
+- BM25 rank
+- BM25 score
+- RRF contribution from each retriever
+- final RRF score
 
-Page:
-33
-
-Chunk ID:
-116
-
-Content:
-Article 171 establishes a High Islamic Council and describes its
-religious functions.
+This would make it possible to determine whether dense retrieval is
+actually improving ranking or whether RRF is effectively behaving
+like a BM25-first system for the current queries.
 
 
-OBSERVATION
------------
+============================================================
+CURRENT RETRIEVAL FINDINGS
+============================================================
 
-The relevant constitutional document is present in the corpus and
-was retrieved at rank 5, but the retrieved chunk does not contain
-the expected constitutional provision.
+1. BM25 is highly effective when the query vocabulary closely matches
+   the wording of the source.
 
-The top-ranked results are primarily from an UNFPA gender-justice
-country profile and are only indirectly related to the query.
+2. BM25 can fail when the wording of the question differs from the
+   wording used in the legal document.
 
-This indicates a retrieval-ranking failure rather than a corpus
-availability failure.
+3. The query "What is the religion of the country?" demonstrates this
+   limitation clearly: the authoritative constitutional passage says
+   "religion of the State", and BM25 initially ranks several unrelated
+   chunks above it.
+
+4. The generic chunking strategy is sufficient to retrieve the relevant
+   constitutional passage for some simple factual queries, but it does
+   not explicitly model legal structure such as Articles, Chapters,
+   Titles, or sections.
+
+5. Dense retrieval is intended to compensate for lexical mismatch,
+   which is one of the main motivations for the hybrid BM25 + dense
+   retrieval architecture.
+
+6. RRF provides a simple rank-based mechanism for combining lexical and
+   semantic retrieval without requiring the scores of the two retrieval
+   systems to be calibrated to the same scale.
+
+7. The current experiments are preliminary because the evaluation set
+   contains only two questions. The results should therefore be treated
+   as an initial diagnostic rather than a statistically robust
+   evaluation.
 
 
-BASELINE RAGAS CORRELATION
---------------------------
+============================================================
+CURRENT LIMITATIONS
+============================================================
 
-Context recall:
-0.0000
-
-Context precision:
-0.0000
-
-Faithfulness:
-0.666667
-
-Answer relevancy:
-0.670599
+- Very small evaluation set.
+- Generic chunking rather than legal structure-aware segmentation.
+- Dense retrieval contribution requires further diagnostic analysis.
+- Retrieval diagnostics do not yet expose all individual RRF
+  contributions.
+- The current corpus contains heterogeneous legal documents with
+  different structures and purposes.
+- The current evaluation focuses on a small number of factual questions.
 
 
-INITIAL HYPOTHESIS
-------------------
+============================================================
+NEXT STEP
+============================================================
 
-Generic character-based chunking does not adequately preserve
-legal document structure.
+The next planned improvement is structure-aware legal document
+segmentation.
 
-The retrieval system may benefit from legal-aware document
-segmentation based on sections, articles, and clauses.
+The planned approach will preserve legal structures such as:
 
-This hypothesis will be tested in a subsequent retrieval experiment.
+- Constitution
+- Title
+- Chapter
+- Article
+- Section
+
+rather than treating the document as a sequence of generic text
+chunks.
+
+The goal is to investigate whether legal-structure-aware segmentation
+improves retrieval precision and reduces irrelevant context.
+
+This improvement is intentionally marked as future/in progress and is
+NOT included in the current benchmark.
+
+The current benchmark therefore represents:
+
+    Generic Chunking
+        +
+    BM25
+        +
+    Dense Retrieval
+        +
+    RRF
+
+and serves as the baseline/current snapshot against which future
+structure-aware retrieval experiments can be compared.

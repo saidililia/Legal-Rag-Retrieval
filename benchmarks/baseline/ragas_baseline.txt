@@ -1,139 +1,136 @@
-LEGAL RAG — BASELINE EVALUATION
+LEGAL CONSULTATION RAG
+CURRENT EXPERIMENTAL SNAPSHOT
 ================================
 
-Evaluation date:
-2026-08-27
+Date:
+2026-08-28
 
-Purpose:
-Baseline measurement of the initial Legal RAG implementation
-before retrieval, chunking, guardrail, and source-attribution improvements.
+System:
+Generic chunking + BM25 + dense retrieval + Reciprocal Rank Fusion (RRF)
 
+Document ingestion:
+Documents are loaded and generically chunked through ingest.py.
+Structure-aware document segmentation is not currently part of the evaluated system.
+Structure-aware segmentation is an ongoing/planned improvement.
 
-SYSTEM CONFIGURATION
---------------------
-
-LLM:
-- Llama 3 via Ollama
-- Temperature: 0.1
-
-Embedding model:
-- BGE-M3 via Ollama
-
-Vector database:
-- ChromaDB
-
-Lexical retrieval:
-- BM25
-
-Dense retrieval:
-- BGE-M3 embeddings
-
-Hybrid retrieval:
+Retrieval:
+- BM25 lexical retrieval
+- Dense vector retrieval
+- BGE-M3 embeddings via Ollama
+- Chroma vector store
 - Reciprocal Rank Fusion (RRF)
+- Top-k retrieval
 
-Chunking:
-- RecursiveCharacterTextSplitter
-
-Chunk size:
-- 750 characters
-
-Chunk overlap:
-- 150 characters
-
-Number of retrieved documents:
-- 5
-
-Evaluation judge:
-- Local Llama 3 via Ollama
-
-RAGAS configuration:
-- Timeout: 300 seconds
-- Max workers: 1
-- Max retries: 3
-
-
-TEST DATASET
-------------
-
-Number of evaluation questions:
-2
-
-Questions:
-
+Evaluation:
+RAGAS
+Evaluation questions:
 1. What is the official language?
-
 2. What is the religion of the country?
 
+CURRENT RAGAS RESULTS
+================================
 
-BASELINE RAGAS RESULTS
-----------------------
-
-Faithfulness:        0.7083
-Answer Relevancy:    0.6810
-Context Recall:      0.5000
-Context Precision:   0.5000
-
-
-PER-QUESTION RESULTS
---------------------
-
-Question 1:
-What is the official language?
-
-Faithfulness:        0.7500
-Answer Relevancy:    0.691399
-Context Recall:      1.0000
-Context Precision:   1.0000
-
-Question 2:
-What is the religion of the country?
-
-Faithfulness:        0.666667
-Answer Relevancy:    0.670599
-Context Recall:      0.0000
-Context Precision:   0.0000
+Overall:
+Faithfulness:       0.8333
+Answer Relevancy:   0.6409
+Context Recall:     1.0000
+Context Precision:  0.6417
 
 
-OBSERVATIONS
-------------
+Per-question results:
 
-1. The baseline RAG pipeline successfully retrieved context and
-   generated answers for both evaluation questions.
+Question:
+"What is the official language?"
 
-2. The first question achieved perfect context recall and context
-   precision, indicating successful retrieval of the relevant material.
-
-3. The second question produced zero context recall and zero context
-   precision. The retrieved material was related to the topic but did
-   not contain the expected authoritative information.
-
-4. The results indicate that retrieval quality is currently the main
-   area for investigation.
-
-5. Faithfulness and answer relevancy are moderate, suggesting that
-   generation is functional but can potentially be improved through
-   better context selection and grounding.
+Faithfulness:       0.6667
+Answer Relevancy:   0.6239
+Context Recall:     1.0000
+Context Precision:  0.7000
 
 
-KNOWN IMPLEMENTATION ISSUES
----------------------------
+Question:
+"What is the religion of the country?"
 
-- Chroma is currently imported from langchain_community and produces
-  a deprecation warning.
-- RAGAS metric imports produce deprecation warnings.
-- LangchainLLMWrapper and LangchainEmbeddingsWrapper produce
-  deprecation warnings.
-- The detailed evaluation output currently looks for a "contexts"
-  column, while the RAGAS output uses "retrieved_contexts", causing
-  the retrieved chunks to be omitted from the final diagnostic printout.
-- The evaluation dataset currently contains only two questions and
-  should not be considered statistically representative.
+Faithfulness:       1.0000
+Answer Relevancy:   0.6579
+Context Recall:     1.0000
+Context Precision:  0.5833
 
 
-BASELINE STATUS
----------------
+COMPARISON WITH PREVIOUS RUN
+================================
 
-Status: WORKING BASELINE
+Previous run:
+Faithfulness:       0.7083
+Answer Relevancy:   0.6810
+Context Recall:     0.5000
+Context Precision:  0.5000
 
-The core RAG pipeline and RAGAS evaluation execute successfully.
-The baseline is preserved before making architectural improvements.
+Current run:
+Faithfulness:       0.8333
+Answer Relevancy:   0.6409
+Context Recall:     1.0000
+Context Precision:  0.6417
+
+Observed changes:
+
+Faithfulness:       +0.1250
+Answer Relevancy:   -0.0401
+Context Recall:     +0.5000
+Context Precision: +0.1417
+
+
+INTERPRETATION
+================================
+
+1. Retrieval recall improved substantially.
+   Context recall increased from 0.50 to 1.00, indicating that the
+   relevant information required for both evaluated questions was
+   successfully retrieved in the current run.
+
+2. Retrieval precision improved but remains imperfect.
+   Context precision increased from 0.50 to 0.6417. This suggests that
+   relevant evidence is being retrieved, but the retrieved context still
+   contains additional or less relevant chunks.
+
+3. Faithfulness improved.
+   Faithfulness increased from 0.7083 to 0.8333, with the religion
+   question achieving a score of 1.0.
+
+4. Answer relevancy remains a weakness.
+   Answer relevancy decreased slightly from 0.6810 to 0.6409.
+   This suggests that improvements in retrieval recall have not
+   automatically translated into more focused generated answers.
+
+5. Retrieval diagnostics indicate that BM25 has a strong influence
+   on the current ranking. The dense-retrieval contribution should
+   be investigated further before claiming that RRF consistently
+   improves ranking quality.
+
+6. The current experiment therefore provides a baseline for studying
+   hybrid retrieval quality rather than a final optimized retrieval
+   system.
+
+
+CURRENT LIMITATIONS
+================================
+
+- Evaluation set currently contains only two questions.
+- RAGAS scores should therefore be treated as an initial diagnostic
+  rather than a statistically robust benchmark.
+- Dense retrieval contribution requires further diagnostic validation.
+- Generic chunking is currently used.
+- Structure-aware document segmentation has not yet been evaluated.
+
+
+NEXT PLANNED IMPROVEMENT
+================================
+
+Structure-aware document segmentation is in progress.
+
+The planned improvement is to compare generic chunking against
+structure-aware segmentation while keeping the retrieval architecture
+(BM25 + dense retrieval + RRF) as controlled as possible.
+
+The purpose is to determine whether preserving legal document
+structure improves retrieval precision and contextual relevance.

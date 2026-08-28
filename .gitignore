@@ -1,2 +1,27 @@
 chroma_db/
 lenv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.lenv/
+
+# Environment / secrets
+.env
+
+# Vector database
+chroma_db/
+*.sqlite3
+
+# Local data
+documents/*.pdf
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
